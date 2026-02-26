@@ -1,20 +1,7 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Introduction to CogniNautas
 
-# Run and deploy your AI Studio app
+CogniNautas is an innovative platform designed to enhance cognitive skills and foster learning through engaging and interactive experiences. Our goal is to empower users to explore their cognitive potential and embark on a journey of discovery and personal growth.
 
-This contains everything you need to run your app locally.
+With a range of activities and tools, CogniNautas provides a comprehensive environment for users of all ages to develop critical thinking, problem-solving skills, and creativity. We believe that learning should be a fun and rewarding adventure, and our platform embodies this philosophy.
 
-View your app in AI Studio: https://ai.studio/apps/drive/16SulO8c34Kw9VLuzdr8NzyQbpQ-WbC2e
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Join us in shaping a brighter future through the power of cognitive exploration!
