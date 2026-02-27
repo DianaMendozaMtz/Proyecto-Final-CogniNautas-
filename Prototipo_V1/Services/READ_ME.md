@@ -1,1 +1,1 @@
-Carpetas internas
+Carpetas internas de la app
