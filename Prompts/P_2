@@ -1,0 +1,356 @@
+
+# TECHNICAL SPECIFICATION DOCUMENT
+
+## AI-Driven Working Memory Screening Web Application
+
+---
+
+## 1. PROJECT OVERVIEW
+
+Develop a modular, web-based cognitive screening application for children (ages 6–12) implementing the Multicomponent Working Memory Model (Baddeley & Hitch, 1974). The system must measure behavioral proxies of:
+
+* Phonological Loop
+* Visuospatial Sketchpad
+* Central Executive (primary focus)
+
+This is a screening prototype, not a diagnostic medical device.
+
+---
+
+## 2. SYSTEM ARCHITECTURE
+
+### 2.1 High-Level Architecture
+
+Frontend:
+
+* React (preferred) or Vanilla JS
+* Functional components + hooks
+* State management via Context API or Redux
+
+Backend:
+
+* Node.js + Express (optional but recommended)
+* RESTful API endpoints
+
+Database:
+
+* SQLite (local prototype)
+  OR
+* JSON-based local persistence
+
+Machine Learning:
+
+* Lightweight model implemented in:
+
+  * JavaScript (TensorFlow.js optional but not required)
+    OR
+  * Python microservice (if backend enabled)
+
+Export:
+
+* CSV generation endpoint
+
+---
+
+## 3. CORE MODULES
+
+---
+
+# MODULE 1: PHONOLOGICAL LOOP
+
+### “Repeating Parrot”
+
+### 3.1 Functional Requirements
+
+Stimulus:
+
+* Randomized sequences:
+
+  * Digits (0–9)
+  * Pseudowords (generated from phonotactic templates)
+
+Sequence length:
+
+* Initial span = 3 items
+* Adaptive range: 2–9 items
+
+Audio Capture:
+
+* Use Web Speech API (SpeechRecognition)
+* Capture:
+
+  * Transcript
+  * Speech start timestamp
+  * Speech end timestamp
+
+### 3.2 Metrics
+
+For each trial compute:
+
+* Accuracy = (correct tokens / total tokens)
+* Levenshtein distance for string similarity
+* Response Latency = speechStartTime − stimulusEndTime
+* Total articulation duration
+* Error type:
+
+  * Omission
+  * Substitution
+  * Order error
+
+Store per trial:
+{
+sequenceLength,
+presentedSequence,
+recognizedSequence,
+accuracy,
+latency,
+errorType,
+timestamp
+}
+
+### 3.3 Adaptive Logic
+
+IF accuracy ≥ 0.80:
+sequenceLength += 1
+ELSE IF accuracy ≤ 0.50:
+sequenceLength -= 1
+Clamp between [2, 9]
+
+---
+
+# MODULE 2: VISUOSPATIAL SKETCHPAD
+
+### “Invisible Architect” (Corsi-like Task)
+
+### 4.1 Stimulus
+
+* Render 9 clickable blocks (grid layout)
+* Generate randomized sequence of block IDs
+* Visual highlight duration per block: 800ms
+* Interstimulus interval: 300ms
+
+Sequence length:
+
+* Start at 3
+* Adaptive up to 9
+
+### 4.2 User Input
+
+* User clicks blocks in order
+* Record click timestamps
+
+### 4.3 Metrics
+
+Per trial:
+
+* Correct span
+* Maximum span achieved
+* Reaction time (first click − stimulus offset)
+* Completion time
+* Error type:
+
+  * Positional error
+  * Intrusion
+  * Omission
+
+Adaptive rule identical to Module 1.
+
+---
+
+# MODULE 3: CENTRAL EXECUTIVE
+
+### “Symbol Traffic” (Dual Task)
+
+### 5.1 Structure
+
+Phase A: Single-task Baseline
+
+* Visual sorting only
+* Auditory counting only
+
+Phase B: Dual-task condition
+
+* Simultaneous visual sorting + auditory counting
+
+Visual Task:
+
+* Render shapes (circle, square, triangle)
+* Rule-based classification (e.g., by color or shape)
+
+Auditory Task:
+
+* Random tone stream
+* Target tone frequency: 20%
+* User presses key when target detected
+
+### 5.2 Metrics
+
+Compute:
+
+Visual Accuracy (single vs dual)
+Auditory Accuracy (single vs dual)
+Mean Reaction Time
+RT Variability (std deviation)
+Interference Cost =
+(SingleTaskAccuracy − DualTaskAccuracy) / SingleTaskAccuracy
+
+Switch Cost (if rule change implemented)
+
+### 5.3 Adaptive Control
+
+IF dualTaskAccuracy ≥ 0.80:
+increase:
+- stimulus speed
+- rule switching frequency
+- stimulus density
+
+IF dualTaskAccuracy ≤ 0.50:
+decrease load
+
+---
+
+# 6. ANALYSIS ENGINE
+
+## 6.1 Feature Extraction
+
+At session end compute:
+
+features = {
+phonological_mean_accuracy,
+phonological_mean_latency,
+phonological_max_span,
+visuospatial_mean_accuracy,
+visuospatial_max_span,
+visuospatial_mean_latency,
+executive_dual_accuracy,
+executive_interference_cost,
+executive_rt_variability
+}
+
+---
+
+## 6.2 Classification Model
+
+Use:
+
+Option A:
+Decision Tree (depth ≤ 4)
+
+Option B:
+Logistic Regression (multiclass)
+
+Classes:
+
+* VISUAL_DOMINANT
+* VERBAL_DOMINANT
+* EXECUTIVE_WEAKNESS
+* BALANCED_PROFILE
+
+Model input: normalized feature vector
+Model output: probability distribution over classes
+
+No deep learning required.
+
+---
+
+# 7. DATA MODEL
+
+User:
+{
+id,
+age,
+sessionHistory[]
+}
+
+Session:
+{
+date,
+moduleResults,
+extractedFeatures,
+classificationResult
+}
+
+---
+
+# 8. EXPORT SYSTEM
+
+Endpoint:
+GET /export/session/:id
+
+Return:
+CSV with columns:
+
+* Module
+* Trial
+* SequenceLength
+* Accuracy
+* Latency
+* Span
+* InterferenceIndex
+* Classification
+
+---
+
+# 9. FEEDBACK ENGINE
+
+Child Output:
+Generate rule-based feedback:
+
+IF visual_span > verbal_span:
+message = "You are a Master of Images! Try repeating instructions aloud to strengthen sound memory."
+ELSE IF verbal_span > visual_span:
+message = "You are great with sounds! Try visualizing patterns to boost image memory."
+ELSE:
+message = "Your brain balances sounds and images very well!"
+
+Parent Report:
+Structured summary including:
+
+* Strength areas
+* Relative weaknesses
+* Suggested cognitive strategies
+
+---
+
+# 10. NON-FUNCTIONAL REQUIREMENTS
+
+* Response time < 100ms per interaction
+* Modular architecture
+* Component isolation per module
+* Code documentation required
+* No medical claims in UI
+
+---
+
+# 11. OPTIONAL ADVANCED FEATURES
+
+* Subvocal rehearsal detection via audio rhythm analysis
+* Lip movement detection (basic OpenCV integration)
+* Session comparison dashboard
+* Longitudinal tracking
+
+---
+
+# 12. ETHICAL & COMPLIANCE NOTES
+
+* Do NOT label output as diagnosis
+
+* Include disclaimer:
+  “This application provides cognitive performance screening and does not replace professional evaluation.”
+
+* Store data securely
+
+* No third-party data sharing
+
+---
+
+# FINAL OBJECTIVE
+
+Deliver a functional prototype demonstrating:
+
+* Working memory subsystem simulation
+* Adaptive difficulty control
+* Feature extraction
+* Lightweight AI classification
+* Exportable structured report
+
