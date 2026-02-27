@@ -1,6 +1,7 @@
 {
-  "name": "Run Chase",
-  "description": "An arcade cricket game where Gemini is your personal, live sports commentator.",
-  "requestFramePermissions": [],
-  "prompt": ""
+  "name": "Cogninautas: Cognitive Screening",
+  "description": "A modular, web-based working memory screening application for children using the Baddeley-Hitch model. Features phonological, visuospatial, and central executive modules with adaptive difficulty and AI-driven reporting.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
 }
